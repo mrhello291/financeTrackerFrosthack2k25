@@ -1,5 +1,89 @@
 [
     {
+        "Date": "03-05-2018",
+        "Particulars": "MCC ISSUE CHARGES",
+        "Deposit": NaN,
+        "Withdrawal": 88.5,
+        "Balance": 75134.21
+    },
+    {
+        "Date": "03-05-2018",
+        "Particulars": "TO TRANSFER-HOUSING LOAN CLOSURE- TRANSFER TO 30120247541",
+        "Deposit": NaN,
+        "Withdrawal": 32652.0,
+        "Balance": 42482.21
+    },
+    {
+        "Date": "04-05-2018",
+        "Particulars": "TO TRANSFER-EDUCATION LOAN CLOSURE- TRANSFER TO 33975605481",
+        "Deposit": NaN,
+        "Withdrawal": 21739.0,
+        "Balance": 20743.21
+    },
+    {
+        "Date": "10-05-2018",
+        "Particulars": "BY TRANSFER-INB IMPS812923125449/22222222 22/XX0317/Remitly Tr- MAB00011671487 5 MAB00011671487 5",
+        "Deposit": 70006.68,
+        "Withdrawal": NaN,
+        "Balance": 90749.89
+    },
+    {
+        "Date": "10-05-2018",
+        "Particulars": "WITHDRAWAL TRANSFER-- TRANSFER TO 31942153944",
+        "Deposit": NaN,
+        "Withdrawal": 10000.0,
+        "Balance": 80749.89
+    },
+    {
+        "Date": "17-05-2018",
+        "Particulars": "BY TRANSFER-INB payback- ITR3333997 TRANSFER FROM 52209892328",
+        "Deposit": 40000.0,
+        "Withdrawal": NaN,
+        "Balance": 120749.89
+    },
+    {
+        "Date": "22-05-2018",
+        "Particulars": "BY TRANSFER- 8200596190328 21BZ3SB IOC Ref No3000028105- TRANSFER FROM 4599421105210",
+        "Deposit": 203.1,
+        "Withdrawal": NaN,
+        "Balance": 120952.99
+    },
+    {
+        "Date": "28-05-2018",
+        "Particulars": "TO TRANSFER-PMSBY RENEWAL SBISB03606201814523679117 - TRANSFER TO 4899274105218",
+        "Deposit": NaN,
+        "Withdrawal": 12.0,
+        "Balance": 120940.99
+    },
+    {
+        "Date": "10-06-2018",
+        "Particulars": "WITHDRAWAL TRANSFER-- TRANSFER TO 31942153944",
+        "Deposit": NaN,
+        "Withdrawal": 10000.0,
+        "Balance": 110940.99
+    },
+    {
+        "Date": "22-06-2018",
+        "Particulars": "CASH CHEQUE-CASH WITHDRAWAL BY CHEQUE- 367951 367951",
+        "Deposit": NaN,
+        "Withdrawal": 35000.0,
+        "Balance": 75940.99
+    },
+    {
+        "Date": "25-06-2018",
+        "Particulars": "CREDIT INTEREST",
+        "Deposit": 820.0,
+        "Withdrawal": NaN,
+        "Balance": 76760.99
+    },
+    {
+        "Date": "26-06-2018",
+        "Particulars": "BY TRANSFER-INB IMPS817716113199/97053523 91/XX6869/- MAC00013334487 3 MAC00013334487 3",
+        "Deposit": 1200.0,
+        "Withdrawal": NaN,
+        "Balance": 77960.99
+    },
+    {
         "Date": "10-07-2018",
         "Particulars": "WITHDRAWAL TRANSFER-- TRANSFER TO 31942153944",
         "Deposit": NaN,

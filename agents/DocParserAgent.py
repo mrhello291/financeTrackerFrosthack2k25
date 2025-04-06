@@ -32,21 +32,21 @@ def extract_transactions_from_page(page_text):
     Transactions without a valid date should be ignored.
     """
     prompt = """
-            You are an assistant that extracts transaction data from a financial document page input.
-            The page may contain transactions presented in a table.
-            Please extract all transactions that have a valid date (format dd-mm-yyyy) and output a JSON array of objects.
-            Please go over all the text in the page and extract all transactions.
-            Each object must contain exactly the following keys:
-            - "Date": (string in dd-mm-yyyy format)
-            - "Particulars": (string describing the transaction; if missing, use an empty string)
-            - "Deposit": (a number or null if missing)
-            - "Withdrawal": (a number or null if missing)
-            - "Balance": (a number or null if missing)
+You are an assistant that extracts transaction data from a financial document page input.
+The page may contain transactions presented in a table.
+Please extract all transactions that have a valid date (format dd-mm-yyyy) and output a JSON array of objects.
+Please go over all the text in the page and extract all transactions.
+Each object must contain exactly the following keys:
+- "Date": (string in dd-mm-yyyy format)
+- "Particulars": (string describing the transaction; if missing, use an empty string)
+- "Deposit": (a number or null if missing)
+- "Withdrawal": (a number or null if missing)
+- "Balance": (a number or null if missing)
 
-            Ignore any transaction that does not have a valid date. Don't confuse 0.0 with null.
-            
-            If the page does not contain any transactions, return an empty JSON array.
-            """
+Ignore any transaction that does not have a valid date. Don't confuse 0.0 with null.
+
+If the page does not contain any transactions, return an empty JSON array.
+"""
     response = llmChat([
                         {"role": "system", "content": prompt},
                         {"role": "user", "content": f"Page text:\n {page_text}"}

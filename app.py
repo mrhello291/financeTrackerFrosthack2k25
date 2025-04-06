@@ -1,7 +1,9 @@
 import streamlit as st
 import requests
 import os
+from typing import List
 import plotly.express as px
+import plotly.io as pio
 import pandas as pd
 import json
 
@@ -31,6 +33,7 @@ def render_response(response):
             with st.expander("Show Model Thought Process"):
                 for t in thoughts:
                     st.write(t)
+        return final_answer
 
     except Exception as e:
         st.error(f"Error processing response: {e}")
@@ -202,6 +205,10 @@ def chat_page():
     st.title("Chat with Model")
 
     query = st.text_input("Enter your query")
+    
+    # New checkbox to decide whether to generate graphs
+    visualize = st.checkbox("Visualize data", value=False)
+
 
     if st.button("Get Answer"):
         if query:
@@ -215,11 +222,52 @@ def chat_page():
                 response0 = requests.post("http://0.0.0.0:8000/rest/post", json={"message": query})
                 response = requests.post("http://0.0.0.0:8000/pest/post", json={"message": query})
                 
-                render_response(response)
+                answer_text = render_response(response)
             else:
-                render_response(response00)
+                answer_text = render_response(response00)
+            
+            # If we received a valid chat answer, send it to the graphing agent.
+            if answer_text:
+                if visualize:
+                    st.info("Generating graphs...")
+                    graph_message = (
+                        f"User Query: {query}\n"
+                        f"Chat Answer: {answer_text}\n"
+                        "Generate multiple relevant graphs (e.g., line charts, bar charts, pie charts, histograms) that best represent the underlying transaction data."
+                    )
+                    graph_response = requests.post("http://0.0.0.0:8000/rest/graph", json={"message": graph_message})
+                    try:
+                        graph_data = graph_response.json()
+                    except Exception as e:
+                        st.error("Error parsing graph response: " + str(e))
+                        return
+                    if "graphs" in graph_data:
+                        graphs_list = graph_data["graphs"]
+                        if not isinstance(graphs_list, list):
+                            graphs_list = [graphs_list]
+                        st.write(f"Generated {len(graphs_list)} graphs:")
+                        for i, graph_json in enumerate(graphs_list):
+                            try:
+                                # Try to parse the graph JSON string
+                                parsed_graph = json.loads(graph_json)
+                                # If it's an error message, display it and skip rendering.
+                                if isinstance(parsed_graph, dict) and "error" in parsed_graph:
+                                    st.error(f"Graph {i+1} error: {parsed_graph['error']}")
+                                    continue
+                                # Otherwise, try to render the figure.
+                                fig = pio.from_json(graph_json)
+                                st.plotly_chart(fig)
+                            except Exception as e:
+                                st.error(f"Error rendering graph {i+1}: {e}")
+                    else:
+                        st.error("Graph data not found in response.")
+                else:
+                    st.info("Graph visualization disabled.")
+            else:
+                st.error("No answer received from chat agent to generate graphs.")
         else:
             st.warning("Please enter a query before clicking the button.")
+
 
 def search_page():
     """New Page for Searching"""
@@ -291,19 +339,37 @@ def dynamic_graph_page():
     st.title("📊 Dynamic Transaction Graphs")
     st.write("Enter a query to generate a custom graph based on transaction data.")
     
-    user_query = st.text_input("Enter your query (e.g., 'show me monthly expenditure trends')")
+    
+    user_query = st.text_input("Enter your query (e.g., 'show me balance trends')")
     
     if st.button("Generate Graph"):
         if user_query:
-            dynamic_plotting_agent(user_query)
+            response = requests.post("http://0.0.0.0:8000/rest/graph", json={"message": user_query})
+            try:
+                data = response.json()
+            except Exception as e:
+                st.error("Error parsing response: " + str(e))
+                return
+            print(data)
+            if "graph" in data:
+                graph_json = data["graph"]
+                try:
+                    # Convert the JSON string back to a Plotly figure.
+                    fig = pio.from_json(graph_json)
+                    st.plotly_chart(fig)
+                except Exception as e:
+                    st.error("Error rendering graph: " + str(e))
+            else:
+                st.error("Graph not found in response.")
         else:
             st.warning("Please enter a query.")
+
 
 
 def main():
     """Main function to handle navigation with sidebar"""
     st.sidebar.title("🔗 Navigation")
-    page = st.sidebar.radio("Go to", ["📂 Upload File", "🔎 Query Transactions","💬 Chat" ,"🔍 Search"])
+    page = st.sidebar.radio("Go to", ["📂 Upload File", "🔎 Query Transactions","💬 Chat" ,"🔍 Search", "📊 Dynamic Graph"])
 
     if page == "📂 Upload File":
         upload_page()

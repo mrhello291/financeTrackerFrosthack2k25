@@ -1,6 +1,7 @@
 import os
 from uagents import Agent, Bureau, Context, Model
 import json
+from typing import List
 # from agents.DocumentParsingAgent import process_pdfs
 # from agents.DocumentParsingAgent2 import extract_transactions, process_all_files
 from agents.DocParserAgent import process_pdf_and_extract_transactions
@@ -8,6 +9,7 @@ from agents.GetReleventTransaction import get_relevance, get_relevant_transactio
 from agents.GetUserQueryOutput import answerQuery
 from agents.GetReleventTransactionByDate import get_filtered_transactions
 from agents.IsContextNeeded import CheckQuery
+from agents.GraphingAgent import generate_graphs
 from pathwayF.langchainPathwayClient import run
 
 #kis tarah ke message se trigger hoga 
@@ -54,6 +56,11 @@ class IsContextNeededAgentMessage(Model):
 class IsContextNeededAgentResponse(Model):
     ans: str
 
+class GraphingAgentMessage(Model):
+    message: str
+class GraphingAgentMessageResponse(Model):
+    graphs: List[str]  # A list of Plotly figure JSON strings
+
 QueryAnswerAgent = Agent(name="QueryAnswerAgent", seed="QueryAnswerAgent recovery phrase", port=8000)
 
 ReleventDocumentAgent = Agent(name="ReleventDocumentAgent", seed="ReleventDocumentAgent recovery phrase", port=8000)
@@ -65,6 +72,8 @@ FetchReleventDocbydateAgent = Agent(name="FetchReleventDocbydateAgent", seed="Fe
 IsContextNeededAgent = Agent(name="IsContextNeededAgent", seed="IsContextNeededAgent recovery phrase", port=8000)
 
 QueryVectorStoreAgent = Agent(name="QueryVectorStoreAgent", seed="QueryVectorStoreAgent recovery phrase", port=8000)
+
+GraphingAgent = Agent(name="GraphingAgent", seed="GraphingAgent recovery phrase", port=8000)
 
 @QueryVectorStoreAgent.on_rest_post("/query", QueryVectorStoreAgentMessage, QueryVectorStoreAgentMessageResponse)
 async def query_vector_store_agent(ctx: Context, message: QueryVectorStoreAgentMessage) -> QueryVectorStoreAgentMessageResponse:
@@ -233,6 +242,17 @@ async def query_answer_agent(ctx: Context , message: QueryAnswerAgentMessage) ->
     # await ctx.send(sender, ans)
     return QueryAnswerAgentMessageResponse(ans=ans)
 
+@GraphingAgent.on_rest_post("/rest/graph", GraphingAgentMessage, GraphingAgentMessageResponse)
+async def graphing_agent(ctx: Context, message: GraphingAgentMessage) -> GraphingAgentMessageResponse:
+    """
+    Handles the graphing agent's message.
+    It generates a graph based on the user query and returns the graph in JSON format.
+    """
+    print("\n------ Generating dynamic graphs ---------\n")
+    graphs = generate_graphs(message.message)
+    print("\n------ Generated dynamic graphs successfully ---------\n")
+    return GraphingAgentMessageResponse(graphs=graphs)
+
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -267,6 +287,7 @@ bureau.add(ReleventDocumentAgent)
 bureau.add(FetchReleventDocbydateAgent)
 bureau.add(IsContextNeededAgent)
 bureau.add(QueryVectorStoreAgent)
+bureau.add(GraphingAgent)
 # bureau.add(DemoAgent)
 
 if __name__ == "__main__":
