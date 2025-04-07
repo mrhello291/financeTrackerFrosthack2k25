@@ -107,17 +107,17 @@ pip install -r requirements.txt
 ## Running the Application
 Follow these steps to start the application:
 
-1. **Start the Pathway Vector Store Server**
+1. **Start the Fetch.AI Agents**
    ```bash
-   python3 pathwayF/pathwayServer.py e
+   python -m agents.ActivateVectorStore
+   python -m agents.DocParserAgent
+   python -m agents.getReleventTransaction
+   python -m agents.GetUserQueryOutput
+   python -m agents.GraphingAgent
+   python -m agents.IsContextNeeded
    ```
 
-2. **Start the Fetch.AI Agent**
-   ```bash
-   python3 agent_fetchai.py
-   ```
-
-3. **Run the Streamlit App**
+2. **Run the Streamlit App**
    ```bash
    streamlit run app.py
    ```
