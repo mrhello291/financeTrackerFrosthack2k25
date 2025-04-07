@@ -1,14 +1,12 @@
 import os
 import re
-import math
 import json
 from datetime import datetime
 from langchain_community.document_loaders import PyPDFLoader
-# from langchain.text_splitter import CharacterTextSplitter
-# from langchain_core.prompts import ChatPromptTemplate
-# from langchain import hub
-from agents.DocToGDrive import grivePipe
-from asi_chat import llmChat
+from uagents import Agent, Context, Model
+from utils.DocToGDrive import grivePipe
+from utils.asiChat import llmChat
+
 
 #############################################
 # Step 1: PDF Parsing (per page)
@@ -44,6 +42,7 @@ Each object must contain exactly the following keys:
 - "Balance": (a number or null if missing)
 
 Ignore any transaction that does not have a valid date. Don't confuse 0.0 with null.
+Return ONLY a valid JSON array. No commentary or code blocks.
 
 If the page does not contain any transactions, return an empty JSON array.
 """
@@ -51,7 +50,7 @@ If the page does not contain any transactions, return an empty JSON array.
                         {"role": "system", "content": prompt},
                         {"role": "user", "content": f"Page text:\n {page_text}"}
                         ],
-                       temperature=0.4,
+                       temperature=0.2,
                        max_tokens=10000)
     try:
         res = json.loads(response)["choices"][0]["message"]["content"]
@@ -64,37 +63,51 @@ If the page does not contain any transactions, return an empty JSON array.
         for txn in transactions:
             for field in ["Deposit", "Withdrawal", "Balance"]:
                 if txn.get(field) is None:
-                    txn[field] = math.nan
+                    txn[field] = None
         print(transactions)
     except Exception as e:
         print("Error parsing LLM output for page. Using empty transactions. Error:", e)
         transactions = []
     return transactions
 
+# def extract_transaction_table(pages_text):
+#     """
+#     Process pages in groups of two. For each pair of pages, join their text
+#     and call the LLM once. If an odd number of pages exists, the last group will
+#     contain only one page.
+#     Combine transactions from all groups into a single table.
+#     """
+#     all_transactions = []
+#     num_pages = len(pages_text)
+#     i = 0
+#     while i < num_pages:
+#         if i + 1 < num_pages:
+#             joined_text = pages_text[i] + "\n" + pages_text[i+1]
+#             print(f"Processing pages {i+1} and {i+2} via LLM...")
+#         else:
+#             joined_text = pages_text[i]
+#             print(f"Processing page {i+1} via LLM...")
+#         transactions = extract_transactions_from_page(joined_text)
+#         print(f"Extracted {len(transactions)} transactions from pages {i+1} and {i+2}.")
+#         print("Transactions:", transactions)
+#         if isinstance(transactions, list):
+#             all_transactions.extend(transactions)
+#         i += 2
+#     return all_transactions
+
 def extract_transaction_table(pages_text):
     """
-    Process pages in groups of two. For each pair of pages, join their text
-    and call the LLM once. If an odd number of pages exists, the last group will
-    contain only one page.
-    Combine transactions from all groups into a single table.
+    Process each page individually by calling the LLM to extract transactions.
+    Combine the results from all pages into a single table.
     """
     all_transactions = []
-    num_pages = len(pages_text)
-    i = 0
-    while i < num_pages:
-        if i + 1 < num_pages:
-            joined_text = pages_text[i] + "\n" + pages_text[i+1]
-            print(f"Processing pages {i+1} and {i+2} via LLM...")
-        else:
-            joined_text = pages_text[i]
-            print(f"Processing page {i+1} via LLM...")
-        transactions = extract_transactions_from_page(joined_text)
-        print(f"Extracted {len(transactions)} transactions from pages {i+1} and {i+2}.")
-        print("Transactions:", transactions)
+    for i, page_text in enumerate(pages_text):
+        print(f"Processing page {i+1} via LLM...")
+        transactions = extract_transactions_from_page(page_text)
         if isinstance(transactions, list):
             all_transactions.extend(transactions)
-        i += 2
     return all_transactions
+
 
 #############################################
 # Step 4: Append the Table into processed_output.json by Month-Year
@@ -151,12 +164,62 @@ def process_pdf_and_extract_transactions(file_path):
     return transaction_table
 
 #############################################
+# Making agent
+#############################################
+
+class InputReaderAgentMessage(Model):
+    message: str
+
+class InputReaderAgentMessageResponse(Model):
+    ftd: list
+
+InputReaderParseAgent = Agent(name="InputReaderAgent", seed="InputReaderAgent recovery phrase", port=8002, mailbox=True)
+
+@InputReaderParseAgent.on_rest_post("/parse",InputReaderAgentMessage,InputReaderAgentMessageResponse)
+async def input_reader_agent(ctx: Context, message: InputReaderAgentMessage) -> InputReaderAgentMessageResponse:
+    """
+    Handles the input reader agent's message.
+    
+    This agent processes the given PDF file by:
+      1. Parsing the PDF into pages.
+      2. Extracting the transaction table via LLM (one call per page).
+      3. Combining transactions from all pages.
+      4. Updating the processed_output.json by Month-Year.
+      5. Uploading transaction table chunks to Google Drive.
+    
+    Args:
+        ctx (Context): The context of the agent.
+        message (InputReaderAgentMessage): The message containing the filename to process.
+    
+    Returns:
+        InputReaderAgentMessageResponse: The response containing the processed transaction data.
+    """
+    
+    print("\n ------Parsing the input---------. \n")
+    
+    # Assume message.message contains the filename to process
+    file_name = message.message
+    file_path = os.path.join("INFO/data", file_name)
+    
+    # Call the unified function that processes the PDF and does all steps.
+    ftd = process_pdf_and_extract_transactions(file_path)
+    
+    print("\n ------Parsed the input successfully---------. \n")
+    print(InputReaderParseAgent.address)
+    
+    return InputReaderAgentMessageResponse(ftd=ftd)
+
+
+#############################################
 # Example usage: Process all PDFs in a folder.
 #############################################
 if __name__ == "__main__":
-    pdf_folder = "INFO/data"
-    for filename in os.listdir(pdf_folder):
-        if filename.lower().endswith(".pdf"):
-            file_path = os.path.join(pdf_folder, filename)
-            process_pdf_and_extract_transactions(file_path)
-    print("All PDFs processed.")
+    InputReaderParseAgent.run()
+    # pdf_folder = "INFO/data"
+    # for filename in os.listdir(pdf_folder):
+    #     if filename.lower().endswith(".pdf"):
+    #         file_path = os.path.join(pdf_folder, filename)
+    #         process_pdf_and_extract_transactions(file_path)
+    # print("All PDFs processed.")
+    
+    

@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
 import matplotlib.dates as mdates
+from utils.DriveJSONRetriever import retrieve_data_from_gdrive
+
 
 # Use a Seaborn style for a polished look
 sns.set(style="whitegrid")
@@ -16,6 +18,7 @@ def load_data(json_file):
     
     with open(json_file, 'r') as f:
         data = json.load(f)
+    # data = retrieve_data_from_gdrive('processed_output.json')
     
     records = []
     for file_name, transactions in data.items():

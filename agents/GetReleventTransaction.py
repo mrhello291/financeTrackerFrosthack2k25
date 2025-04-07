@@ -1,16 +1,18 @@
 from typing import Literal, Dict, List, Optional
 from langchain_core.prompts import ChatPromptTemplate
 # from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain_groq import ChatGroq
-from langchain_huggingface import HuggingFaceEndpoint
+# from langchain_groq import ChatGroq
+# from langchain_huggingface import HuggingFaceEndpoint
 # from langchain_community.llms import HuggingFaceEndpoint
 from dotenv import load_dotenv, find_dotenv
 import os
 import json
 import re
 from datetime import datetime
-from langchain_google_genai import ChatGoogleGenerativeAI
-from asi_chat import llmChat
+from uagents import Agent, Bureau, Context, Model
+# from langchain_google_genai import ChatGoogleGenerativeAI
+from utils.asiChat import llmChat
+from utils.DriveJSONRetriever import upload_my_file
 
 
 
@@ -19,9 +21,9 @@ os.environ['LANGCHAIN_TRACING_V2'] = 'true'
 os.environ['LANGCHAIN_ENDPOINT'] = 'https://api.smith.langchain.com'
 os.environ['LANGCHAIN_PROJECT'] = 'advanced-rag'
 os.environ['LANGCHAIN_API_KEY'] = os.getenv("LANGSMITH_API_KEY")
-os.environ['GROQ_API_KEY'] = os.getenv("GROQ_API_KEY")
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = os.getenv("HUGGINGFACEHUB_API_TOKEN")
-os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
+# os.environ['GROQ_API_KEY'] = os.getenv("GROQ_API_KEY")
+# os.environ["HUGGINGFACEHUB_API_TOKEN"] = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+# os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
 
 
 # Function to get relevant transactions based on user query
@@ -291,3 +293,48 @@ def get_relevant_transactions(result: str, database: dict):
     # except Exception as e:
     #     print("Error filtering transactions:", e)
     #     return []
+    
+    
+    
+class ReleventDocumentAgentMessage(Model):
+    # message: str
+    message : str
+    # ftd : dict
+
+class ReleventDocumentAgentResponse(Model):
+    fld : list
+
+ReleventDocumentAgent = Agent(name="ReleventDocumentAgent", seed="ReleventDocumentAgent recovery phrase", port=8003, mailbox=True)
+
+@ReleventDocumentAgent.on_rest_post("/rest/post", ReleventDocumentAgentMessage, ReleventDocumentAgentResponse)
+async def relevent_document_agent(ctx: Context , message: ReleventDocumentAgentMessage)-> ReleventDocumentAgentResponse:
+    """
+    Handles the relevant document agent's message.
+
+    Args:
+        context (Context): The context of the agent.
+        sender (str): The sender of the message.
+        message (InputReaderAgentMessage): The message from the relevant document agent.
+    """
+    # print(ReleventDocumentAgent.address)
+    print("\n ------Getting relevant transactions---------. \n")
+    with open("INFO/processed_output.json", "r") as file:
+        ftd2 = json.load(file)
+
+    print("\n ------Getting relevant transactions---------. \n")
+    flq = get_relevance(message.message)
+    # fld = get_relevant_transactions(flq, message.ftd)
+    fld = get_relevant_transactions(flq,ftd2)
+    print("\n ------Got relevant transactions successfully---------. \n")
+    with open("INFO/filtered_transactions.json", "w") as file:
+            json.dump(fld, file, indent=4)
+    # upload_my_file("filtered_transactions.json", fld)
+    
+    
+    # await ctx.send(sender, fld)
+    return ReleventDocumentAgentResponse(fld=fld)
+
+if __name__ == "__main__":
+    # Run the agent
+    ReleventDocumentAgent.run()
+

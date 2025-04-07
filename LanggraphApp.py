@@ -1,7 +1,7 @@
 from typing_extensions import TypedDict
 from typing import List
-from agents.DocumentParsingAgent import process_pdfs
-from agents.DocumentParsingAgent2 import extract_transactions, process_all_files
+from utils.DocumentParsingAgent import process_pdfs
+from utils.DocumentParsingAgent2 import extract_transactions, process_all_files
 from agents.GetReleventTransaction import get_relevance, get_relevant_transactions
 from agents.GetUserQueryOutput import answerQuery
 from langgraph.graph import END, StateGraph

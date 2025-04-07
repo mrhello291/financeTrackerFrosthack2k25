@@ -1177,5 +1177,233 @@
             "Withdrawal": null,
             "Balance": 17315.0
         }
+    ],
+    "Feb-25": [
+        {
+            "Date": "28-02-2025",
+            "Particulars": "",
+            "Deposit": null,
+            "Withdrawal": null,
+            "Balance": 13.77
+        },
+        {
+            "Date": "01-02-2025",
+            "Particulars": "UPI/CR/539823514912/Piyush K/PPIW/9528486231/UPI P",
+            "Deposit": 37.0,
+            "Withdrawal": null,
+            "Balance": 16375.77
+        },
+        {
+            "Date": "01-02-2025",
+            "Particulars": "UPI/DR/503296159918/HIMACHAL/INDB/pos.113056/UPI",
+            "Deposit": null,
+            "Withdrawal": 45.0,
+            "Balance": 16330.77
+        },
+        {
+            "Date": "01-02-2025",
+            "Particulars": "UPI/DR/503218281423/airtel/UTIB/airtel.pay/UPI",
+            "Deposit": null,
+            "Withdrawal": 22.0,
+            "Balance": 16308.77
+        },
+        {
+            "Date": "01-02-2025",
+            "Particulars": "UPI/DR/503222985975/PALAK GU/HDFC/vyapar.170/UPI",
+            "Deposit": null,
+            "Withdrawal": 350.0,
+            "Balance": 15958.77
+        },
+        {
+            "Date": "02-02-2025",
+            "Particulars": "UPI/DR/503348524484/HIMACHAL/INDB/pos.113056/UPI",
+            "Deposit": null,
+            "Withdrawal": 20.0,
+            "Balance": 15938.77
+        },
+        {
+            "Date": "02-02-2025",
+            "Particulars": "UPI/DR/503365048957/HIMACHAL/INDB/pos.113056/UPI",
+            "Deposit": null,
+            "Withdrawal": 30.0,
+            "Balance": 15908.77
+        },
+        {
+            "Date": "03-02-2025",
+            "Particulars": "UPI/DR/503479375841/HIMACHAL/INDB/pos.113056/UPI",
+            "Deposit": null,
+            "Withdrawal": 45.0,
+            "Balance": 15863.77
+        },
+        {
+            "Date": "03-02-2025",
+            "Particulars": "UPI/CR/503436304475/Asif  Hoda/SBIN/hoda.asif1/UPI",
+            "Deposit": 37.0,
+            "Withdrawal": null,
+            "Balance": 15900.77
+        },
+        {
+            "Date": "03-02-2025",
+            "Particulars": "UPI/DR/503486556761/HIMACHAL/INDB/pos.113056/UPI",
+            "Deposit": null,
+            "Withdrawal": 20.0,
+            "Balance": 15880.77
+        },
+        {
+            "Date": "03-02-2025",
+            "Particulars": "UPI/DR/503487111291/HIMACHAL/INDB/pos.113056/UPI",
+            "Deposit": null,
+            "Withdrawal": 30.0,
+            "Balance": 15850.77
+        },
+        {
+            "Date": "03-02-2025",
+            "Particulars": "UPI/DR/503493489260/HIMACHAL/INDB/pos.113056/UPI",
+            "Deposit": null,
+            "Withdrawal": 20.0,
+            "Balance": 15830.77
+        },
+        {
+            "Date": "04-02-2025",
+            "Particulars": "UPI/DR/503510858325/SHAKUNTALA/YESB/q702729766/UPI",
+            "Deposit": null,
+            "Withdrawal": 132.0,
+            "Balance": 15698.77
+        },
+        {
+            "Date": "04-02-2025",
+            "Particulars": "UPI/CR/503565117212/Somya  B/SBIN/8107785304/Sent",
+            "Deposit": 76.0,
+            "Withdrawal": null,
+            "Balance": 15774.77
+        },
+        {
+            "Date": "04-02-2025",
+            "Particulars": "UPI/DR/503511749638/HIMACHAL/INDB/pos.113056/UPI",
+            "Deposit": null,
+            "Withdrawal": 20.0,
+            "Balance": 15754.77
+        },
+        {
+            "Date": "04-02-2025",
+            "Particulars": "UPI/DR/503524473974/HIMACHAL/INDB/pos.113056/UPI",
+            "Deposit": null,
+            "Withdrawal": 40.0,
+            "Balance": 15714.77
+        },
+        {
+            "Date": "04-02-2025",
+            "Particulars": "UPI/DR/503532478156/SHAKUNTALA/YESB/q702729766/UPI",
+            "Deposit": null,
+            "Withdrawal": 136.0,
+            "Balance": 15578.77
+        },
+        {
+            "Date": "04-02-2025",
+            "Particulars": "UPI/DR/503534011063/HIMACHAL/INDB/pos.113056/UPI",
+            "Deposit": null,
+            "Withdrawal": 35.0,
+            "Balance": 15543.77
+        },
+        {
+            "Date": "05-02-2025",
+            "Particulars": "UPI/CR/540234607239/Piyush K/PPIW/9528486231/UPI P",
+            "Deposit": 40.0,
+            "Withdrawal": null,
+            "Balance": 15583.77
+        },
+        {
+            "Date": "05-02-2025",
+            "Particulars": "UPI/DR/503663496020/HIMACHAL/INDB/pos.113056/UPI",
+            "Deposit": null,
+            "Withdrawal": 20.0,
+            "Balance": 15563.77
+        },
+        {
+            "Date": "05-02-2025",
+            "Particulars": "UPI/DR/503664328363/HIMACHAL/INDB/pos.113056/UPI",
+            "Deposit": null,
+            "Withdrawal": 20.0,
+            "Balance": 15543.77
+        }
+    ],
+    "Apr-10": [
+        {
+            "Date": "08-04-2010",
+            "Particulars": "Insurance",
+            "Deposit": 272.45,
+            "Withdrawal": null,
+            "Balance": 5506.54
+        },
+        {
+            "Date": "10-04-2010",
+            "Particulars": "ATM",
+            "Deposit": null,
+            "Withdrawal": 200.0,
+            "Balance": 5306.54
+        },
+        {
+            "Date": "12-04-2010",
+            "Particulars": "Internet Transfer",
+            "Deposit": null,
+            "Withdrawal": 250.0,
+            "Balance": 5556.54
+        },
+        {
+            "Date": "12-04-2010",
+            "Particulars": "Payroll",
+            "Deposit": 2100.0,
+            "Withdrawal": null,
+            "Balance": 7656.54
+        },
+        {
+            "Date": "13-04-2010",
+            "Particulars": "Bill payment",
+            "Deposit": null,
+            "Withdrawal": 135.07,
+            "Balance": 7521.47
+        },
+        {
+            "Date": "14-04-2010",
+            "Particulars": "Direct debit",
+            "Deposit": null,
+            "Withdrawal": 200.0,
+            "Balance": 7321.47
+        },
+        {
+            "Date": "14-04-2010",
+            "Particulars": "Deposit",
+            "Deposit": 250.0,
+            "Withdrawal": null,
+            "Balance": 7567.87
+        },
+        {
+            "Date": "15-04-2010",
+            "Particulars": "Bill payment",
+            "Deposit": null,
+            "Withdrawal": 525.72,
+            "Balance": 7042.15
+        },
+        {
+            "Date": "17-04-2010",
+            "Particulars": "Bill payment",
+            "Deposit": null,
+            "Withdrawal": 327.63,
+            "Balance": 6714.52
+        },
+        {
+            "Date": "17-04-2010",
+            "Particulars": "Bill payment",
+            "Deposit": null,
+            "Withdrawal": 729.96,
+            "Balance": 5984.56
+        },
+        {
+            "Date": "18-04-2010",
+            "Particulars": "Bill payment",
+            "Deposit": null,
+            "Withdrawal": 223.69,
+            "Balance": 5710.87
+        }
     ]
 }

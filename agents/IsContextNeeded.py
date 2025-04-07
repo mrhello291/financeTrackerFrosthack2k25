@@ -6,7 +6,8 @@ from dotenv import load_dotenv, find_dotenv
 import os
 import re
 from langchain_google_genai import ChatGoogleGenerativeAI
-from asi_chat import llmChat
+from uagents import Agent, Bureau, Context, Model
+from utils.asiChat import llmChat
 
 
 load_dotenv(find_dotenv())
@@ -14,9 +15,9 @@ os.environ['LANGCHAIN_TRACING_V2'] = 'true'
 os.environ['LANGCHAIN_ENDPOINT'] = 'https://api.smith.langchain.com'
 os.environ['LANGCHAIN_PROJECT'] = 'advanced-rag'
 os.environ['LANGCHAIN_API_KEY'] = os.getenv("LANGSMITH_API_KEY")
-os.environ['GROQ_API_KEY'] = os.getenv("GROQ_API_KEY")
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = os.getenv("HUGGINGFACEHUB_API_TOKEN")
-os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
+# os.environ['GROQ_API_KEY'] = os.getenv("GROQ_API_KEY")
+# os.environ["HUGGINGFACEHUB_API_TOKEN"] = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+# os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
 
 
 def CheckQuery(query):
@@ -50,8 +51,9 @@ def CheckQuery(query):
 # )
 
     check_prompt = check_prompt_template.format_messages(query=query)
-    response = llmChat(check_prompt)
-    # response = model.invoke(check_prompt) # Clean up response
+    result = llmChat(check_prompt)
+    outer_response = json.loads(result) if isinstance(result, str) else result
+    response = outer_response["choices"][0]["message"]["content"]# Clean up response
 
     print("LLM Response:", response)  # Debugging
     print("LLM Response:", response)  # Debugging
@@ -76,3 +78,38 @@ def CheckQuery(query):
     print("Final Response:", final_response)  # Debugging
 
     return final_response  # Return the actual answer
+
+
+class IsContextNeededAgentMessage(Model):
+    message: str
+
+class IsContextNeededAgentResponse(Model):
+    ans: str
+
+IsContextNeededAgent = Agent(name="IsContextNeededAgent", seed="IsContextNeededAgent recovery phrase", port=8000, mailbox=True)
+
+@IsContextNeededAgent.on_rest_post("/context/post", IsContextNeededAgentMessage, IsContextNeededAgentResponse)
+async def is_context_needed_agent(ctx: Context, message: IsContextNeededAgentMessage) -> IsContextNeededAgentResponse:
+    """
+    Handles the is context needed agent's message.
+
+    Args:
+        context (Context): The context of the agent.
+        sender (str): The sender of the message.
+        message (IsContextNeededAgentMessage): The message from the is context needed agent.
+    """
+    
+    print("\n ------Checking if context is needed---------. \n")
+    ans = CheckQuery(message.message)
+    print("\n ------Checked if context is needed successfully---------. \n")
+    
+    return IsContextNeededAgentResponse(ans=ans)
+
+
+
+if __name__ == "__main__":
+    """
+    Main function to run the IsContextNeededAgent.
+    """
+    # Run the agent
+    IsContextNeededAgent.run()

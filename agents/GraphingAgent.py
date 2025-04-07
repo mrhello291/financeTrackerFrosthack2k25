@@ -1,8 +1,14 @@
 import os
 import re
 import json
+from typing import List
+from datetime import datetime
+from uuid import uuid4
 import pandas as pd
-from asi_chat import llmChat
+from uagents import Agent, Context, Model
+from utils.asiChat import llmChat
+from utils.DriveJSONRetriever import retrieve_data_from_gdrive
+
 
 def sanitize_graph_json(graph_json: str) -> list:
     """
@@ -50,7 +56,7 @@ def sanitize_graph_json(graph_json: str) -> list:
         return []
 
 
-def generate_graphs(query: str) -> str:
+def generate_graphs(query: str) -> List[str]:
     """
     Generates a Plotly graph based on the user query and processed transaction data.
     Loads the filtered transactions from "INFO/filtered_transactions.json",
@@ -63,6 +69,8 @@ def generate_graphs(query: str) -> str:
     
     with open(data_file, "r", encoding="utf-8") as f:
         data = json.load(f)
+    
+    # data = retrieve_data_from_gdrive('filtered_transactions.json')
     
     # Flatten transactions: if data is a list, use it directly; if it's a dict, merge all values.
     if isinstance(data, list):
@@ -107,9 +115,8 @@ Example of the expected output format:
     
     # Call LLM via llmChat. The response is expected to be a JSON array wrapped in markdown code fences.
     response = llmChat([{"role": "system", "content": prompt}, {"role": "user", "content": query}], temperature=0.4)
-    
-    # Try to extract the JSON array from markdown fences if present.
     res = json.loads(response)["choices"][0]["message"]["content"]
+    # Combine the system prompt with the user query.    
     match = re.search(r"```json\s*(.*?)\s*```", res, re.DOTALL)
     json_text = match.group(1) if match else res.strip()
     
@@ -146,3 +153,56 @@ Example of the expected output format:
     
     return sanitized_graphs
 
+# --- New Helper: prepare_graphs_response ---
+def prepare_graphs_response(query: str) -> List[str]:
+    """
+    Generates graphs using generate_graphs(), then processes the output:
+      - Parses the returned JSON array.
+      - Filters out any graphs that contain an error field.
+      - If no valid graphs remain, returns a list with an explicit error JSON.
+    """
+    graphs = generate_graphs(query)
+    valid_graphs = []
+    
+    for graph_json in graphs:
+        try:
+            # Attempt to parse the graph JSON.
+            graph_obj = json.loads(graph_json)
+            if isinstance(graph_obj, dict) and "error" in graph_obj:
+                print("Skipping graph due to error:", graph_obj["error"])
+                continue
+            valid_graphs.append(graph_json)
+        except Exception as e:
+            print("Error parsing graph JSON:", e)
+            continue
+    
+    if not valid_graphs:
+        valid_graphs = [json.dumps({"error": "No valid graphs generated."})]
+    
+    return valid_graphs
+
+
+class GraphingAgentMessage(Model):
+    message: str
+class GraphingAgentMessageResponse(Model):
+    graphs: List[str]  # A list of Plotly figure JSON strings
+
+GraphingAgent = Agent(name="GraphingAgent", seed="GraphingAgent recovery phrase", port=8001, mailbox=True)
+
+
+@GraphingAgent.on_rest_post("/graph", GraphingAgentMessage, GraphingAgentMessageResponse)
+async def graphing_agent(ctx: Context, message: GraphingAgentMessage) -> GraphingAgentMessageResponse:
+    """
+    Handles the graphing agent's message.
+    It generates a graph based on the user query and returns the graph in JSON format.
+    """
+    print("\n------ Generating dynamic graphs ---------\n")
+    graphs = prepare_graphs_response(message.message)
+    print("\n------ Generated dynamic graphs successfully ---------\n")
+    return GraphingAgentMessageResponse(graphs=graphs)
+
+
+if __name__ == "__main__":
+    # Start the GraphingAgent server
+    print("Graphing Agent is running...")
+    GraphingAgent.run()
