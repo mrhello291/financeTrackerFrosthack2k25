@@ -1,4 +1,4 @@
-# Finance Tracker - AI-powered Financial Analysis
+# Finance Tracker - AI-powered Financial Analysis 
 
 ## Overview
 This project is an AI-powered financial analysis system that processes and analyzes transaction data to provide insights and answer user queries. It integrates LangChain, Fetch.ai, and Pathway for efficient data processing and retrieval.
@@ -6,6 +6,9 @@ This project is an AI-powered financial analysis system that processes and analy
 ## video 
 - https://www.youtube.com/watch?v=DY6-u3Y996Q
 
+## Our Resul
+- https://ai-agent-hackatho.devpost.com/project-gallery
+  
 ## Features
 - Parses and extracts financial transactions from documents.
 - Stores structured financial data for quick retrieval.
